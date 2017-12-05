@@ -3,97 +3,80 @@
  */
 'use strict';
 
-import React, {Component, PropTypes} from 'react';
-import ReactNative, {Text, View, StyleSheet, Platform, PixelRatio, ListView, TouchableOpacity, TouchableNativeFeedback, Image} from 'react-native';
+import React, {Component} from 'react';
+import ReactNative, {
+    Alert,
+    Text,
+    View,
+    StyleSheet,
+    Platform,
+    PixelRatio,
+    ListView,
+    RefreshControl,
+    TouchableNativeFeedback,
+    Image
+} from 'react-native';
 import px2dp from '../util/px2dp';
 import theme from '../config/theme';
-import MainPage from '../page/MainPage';
 
-export default class SimpleListView extends Component{
-    static propTypes = {
-        isRenderHeader: PropTypes.bool
-    }
 
-    static defaultProps = {
-        isRenderHeader: false
-    }
+export default class SimpleListView extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         const ds = new ListView.DataSource({
-           rowHasChanged: (r1, r2) => r1 !== r2
+            rowHasChanged: (r1, r2) => r1 !== r2
         });
         this.state = {
-            dataSource: ds.cloneWithRows(this.props.contents)
-        }
+            dataSource: ds.cloneWithRows(this.props.contents),
+        };
+
     }
 
-    _itemClickCallback(rowData){
-        MainPage.switchToWebViewPage(rowData);
+    componentDidMount() {
+        // Alert.alert('提示','componentDidMount')
     }
 
-    _renderItem(rowData, sectionID, rowID, highlightRow){
-        if(Platform.OS === 'ios') {
-            return (
-                <TouchableOpacity
-                    onPress={this._itemClickCallback.bind(this, rowData)}
-                    activeOpacity={theme.btnActiveOpacity}>
-                    {this._renderItemContent(rowData)}
-                </TouchableOpacity>
-            )
-        }else if(Platform.OS === 'android'){
-            return (
+
+    _itemClickCallback(rowData) {
+        // MainPage.switchToWebViewPage(rowData);
+        // Alert.alert('提示','_itemClickCallback')
+        // const { navigate } = this.props.navigation;
+        this.props.navigation('WebViewPage', { data: rowData })
+    }
+
+    _renderItem(rowData) {
+        return (
+            <View>
                 <TouchableNativeFeedback onPress={this._itemClickCallback.bind(this, rowData)}>
                     {this._renderItemContent(rowData)}
                 </TouchableNativeFeedback>
-            )
-        }
+            </View>
+        )
     }
 
-    _renderItemContent(rowData){
-        return(
+    _renderItemContent(rowData) {
+        return (
             <View style={styles.item}>
-                <View style={{
-                    flex: 20,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center'}}>
-                    {rowData.screenshot ?
-                        <Image source={{uri: rowData.screenshot.url}}
-                               style={styles.image}/>
-                        :
-                        <Image source={require('../image/user_article_no_data.png')}
-                               style={styles.image}/>
-                    }
-                </View>
                 <View style={{flex: 80, marginTop: px2dp(10)}}>
-                    <Text style={styles.content} numberOfLines={2}>{rowData.title}</Text>
+                    <Text style={styles.content}>{rowData.desc}</Text>
                     <View style={styles.infoBar}>
-                        <Text style={styles.infoBarText} numberOfLines={1}>{rowData.collectionCount}人收藏
-                            • {rowData.user.username} • {rowData.time}</Text>
+                        <Text style={styles.infoBarText}>{rowData.who} • {rowData.publishedAt}</Text>
                     </View>
                 </View>
             </View>
         );
     }
 
-    _renderHeader(){
-        if(this.props.isRenderHeader) {
-            return (
-                <View style={styles.header}>
-                    <Text>热门文章</Text>
-                </View>
-            );
-        }
-    }
+    render() {
 
-    render(){
-        return(
+        return (
             <ListView
                 style={styles.listView}
                 dataSource={this.state.dataSource}
                 renderRow={this._renderItem.bind(this)}
-                renderHeader={this._renderHeader.bind(this)}
+                enableEmptySections = {true}
+                removeClippedSubviews={false}
             />
         );
     }
@@ -101,7 +84,7 @@ export default class SimpleListView extends Component{
 
 const styles = StyleSheet.create({
     listView: {
-        marginTop: px2dp(15)
+        marginTop: px2dp(0)
     },
     header: {
         backgroundColor: '#fff',
@@ -112,11 +95,13 @@ const styles = StyleSheet.create({
     item: {
         flexDirection: 'row',
         width: theme.screenWidth,
-        height: px2dp(80),
-        backgroundColor: '#fff',
+        // height: px2dp(80),
+        backgroundColor: '#ff5c52',
         paddingLeft: px2dp(15),
+        paddingBottom:px2dp(10),
         paddingRight: px2dp(17),
         borderTopColor: '#d4d4d4',
+        justifyContent:'center',
         borderTopWidth: 1 / PixelRatio.get()
     },
     content: {

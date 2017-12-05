@@ -1,55 +1,51 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableHighlight} from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
 
-var { NativeModules } = require('react-native');
-export default class navigation extends Component {
+import React, { Component } from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
 
-    render() {
-        return (
-            <View>
-                <Text style={styles.welcome}>
-                    真是不容易啊
-                </Text>
-            </View>
-        );
-    }
-}
+const instructions = Platform.select({
+  ios: 'Press Cmd+R to reload,\n' +
+    'Cmd+D or shake for dev menu',
+  android: 'Double tap R on your keyboard to reload,\n' +
+    'Shake or press menu button for dev menu',
+});
 
-class CustomButton extends React.Component {
-    render() {
-        return (
-            <TouchableHighlight
-                style={styles.button}
-                underlayColor="#a5a5a5"
-                onPress={this.props.onPress}>
-                <Text style={styles.buttonText}>{this.props.text}</Text>
-            </TouchableHighlight>
-        );
-    }
+export default class App extends Component<{}> {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>
+          Welcome to React Native!
+        </Text>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#ffffff'
-    },
-    text: {
-        fontSize: 20,
-        color: '#333333'
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        color: '#239786',
-        margin: 10,
-    },
-    button: {
-        margin:5,
-        backgroundColor: 'white',
-        padding: 15,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#cdcdcd',
-    },
-})
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+});

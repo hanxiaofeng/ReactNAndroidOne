@@ -1,27 +1,38 @@
 /**
  * Created by wangdi on 13/11/16.
  */
-import React, {PropTypes} from 'react';
-import ReactNative, {Text, View, StyleSheet, Platform, PixelRatio, WebView, ToastAndroid, BackAndroid, ActivityIndicator} from 'react-native';
+import React, {Component} from 'react';
+import ReactNative, {Text, View,Alert, StyleSheet, Platform, PixelRatio, WebView, ToastAndroid, BackAndroid, ActivityIndicator} from 'react-native';
 import px2dp from '../util/px2dp';
 import theme from '../config/theme';
-import NavigationBar from '../component/WebViewNavigationBar';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import PageComponent from './BackPageComponent';
 
-export default class WebViewPage extends PageComponent{
+export default class WebViewPage extends Component{
+
+    //接收上一个页面传过来的title显示出来
+    static navigationOptions = ({ navigation }) => ({
+        title: '详情'
+    });
+    // 点击返回上一页方法
+    backVC(){
+        //返回首页方法
+        this.props.navigation.goBack();
+    }
+
+    componentDidMount() {
+    }
+
     constructor(props){
         super(props);
         this.state = {
 
         };
+
     }
 
     render(){
-        const data = this.props.rowData;
+        const data = this.props.navigation.state.params.data;
         return(
             <View style={{flex: 1}}>
-                <NavigationBar userInfo={data.user} onPress={this._handleBack.bind(this)}/>
                 <WebView
                     source={{uri: data.url}}
                     style={styles.webView}
@@ -30,14 +41,6 @@ export default class WebViewPage extends PageComponent{
                     onLoad={this._showTips.bind(this, 'load')}
                     onError={this._showTips.bind(this, 'error')}
                 />
-                <View style={styles.bottom}>
-                    <Icon name="favorite-border" color='#58c900' size={px2dp(22)}/>
-                    <Icon name="chat-bubble-outline" size={px2dp(22)} color={theme.grayColor} style={{marginLeft: px2dp(17)}}/>
-                    <Icon name="share" size={px2dp(22)} color={theme.grayColor} style={{marginLeft: px2dp(17)}}/>
-                    <View style={styles.info}>
-                        <Text style={{fontSize: 13}}>阅读 {data.viewsCount} • 收藏 {data.collectionCount} • 评论 {data.commentsCount}</Text>
-                    </View>
-                </View>
             </View>
         );
     }
@@ -60,20 +63,4 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: theme.pageBackgroundColor
     },
-    bottom: {
-        width: theme.screenWidth,
-        height: px2dp(49),
-        backgroundColor: '#fff',
-        borderTopWidth: 1/PixelRatio.get(),
-        borderTopColor: '#c4c4c4',
-        flexDirection: 'row',
-        paddingLeft: px2dp(20),
-        paddingRight: px2dp(20),
-        alignItems: 'center'
-    },
-    info:{
-        flex: 1,
-        flexDirection: 'row-reverse',
-        alignItems:'center',
-    }
 });

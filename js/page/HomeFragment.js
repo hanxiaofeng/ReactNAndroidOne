@@ -4,61 +4,90 @@
 'use strict';
 
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Platform, ToastAndroid} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, RefreshControl, Alert} from 'react-native';
 import theme from '../config/theme';
-import px2dp from '../util/px2dp';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
-import CustomTabBar from '../component/CustomTabBar';
-import HomeTab from './HomeTabPages/HomeTab';
-import TabItemSwitcherPage from './TabItemSwitcherPage';
-import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter';
+import ListViewForOtherTab from '../component/SimpleListView';
 
-export default class HomeFragment extends Component{
-    constructor(props){
+export default class HomeFragment extends Component {
+
+    static navigationOptions = {
+        title: '首页',//对页面的配置
+    };
+
+    constructor(props) {
         super(props);
         this.state = {
-            tabNames: ['首页','Android','iOS']
+            refreshing: false,
+            dataBlob: [],
+
         };
-        this._handleTabNames = this._handleTabNames.bind(this);
+
     }
 
-    render(){
-        return(
+    render() {
+        const {navigate} = this.props.navigation;
+        return (
             <View style={styles.container}>
-                    <ScrollableTabView
-                        renderTabBar={() => <CustomTabBar pullDownOnPress={this._pullDownCallback.bind(this)}/>}
-                        tabBarBackgroundColor="rgb(22,131,251)"
-                        tabBarActiveTextColor="white"
-                        tabBarInactiveTextColor="rgba(255,255,255,0.5)"
-                        tabBarTextStyle={{fontSize: theme.scrollView.fontSize}}
-                        tabBarUnderlineStyle={theme.scrollView.underlineStyle}>
-                        {this.state.tabNames.map((item, i) => {
-                            return(
-                                <HomeTab tabLabel={item} key={i} tabTag={item}/>
-                            );})
-                        }
-                    </ScrollableTabView>
+                <ScrollView
+                    style={{}}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh.bind(this)}
+                            colors={['red','#ffd500','#0080ff','#99e600']}
+                            tintColor={theme.themeColor}
+                            title="Loading..."
+                            titleColor={theme.themeColor}
+                        />
+                    }>
+                    <ListViewForOtherTab navigation={navigate} contents={this.state.dataBlob} />
+                </ScrollView>
             </View>
         );
     }
 
-    _pullDownCallback(){
-        this.props.navigator.push({
-            component: TabItemSwitcherPage,
-            args: {tabNames: this.state.tabNames}
-        });
+    componentDidMount() {
+        this._fetchData();
     }
 
-    componentDidMount(){
-        RCTDeviceEventEmitter.addListener('valueChange', this._handleTabNames);
+    _onRefresh() {
+        this.setState({refreshing: true});
+        this._fetchData();
     }
 
-    componentWillUnmount(){
-        RCTDeviceEventEmitter.removeListener('value', this._handleTabNames);
-    }
 
-    _handleTabNames(tabNames){
-        this.setState({ tabNames: tabNames });
+
+    _fetchData() {
+        var url = 'http://gank.io/api/data/Android/20/1';
+        fetch(url)
+            .then((response) => response.json())
+            .then((responseData) => {
+                let results = responseData.results;
+                // Alert.alert( 'Alert Title',''+responseData.results)
+                var dataBlob = [];
+
+                for (let i in results) {
+                    let info = {
+                        _id: results[i]._id,
+                        createdAt: results[i].createdAt,
+                        desc: results[i].desc,
+                        publishedAt: results[i].publishedAt,
+                        source: results[i].source,
+                        type: results[i].type,
+                        url: results[i].url,
+                        used: results[i].used,
+                        who: results[i].who,
+                    }
+                    dataBlob.push(info);
+                }
+
+                if (dataBlob.length !== 0) {
+                    this.setState({
+                        dataBlob: dataBlob,
+                        refreshing: false,
+                    });
+                }
+            }).done();
     }
 }
 
@@ -66,6 +95,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.pageBackgroundColor
+    },
+    headerHeight: {
+        height: 30
     },
     text: {
         color: theme.text.color,
