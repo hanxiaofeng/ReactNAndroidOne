@@ -84,7 +84,8 @@ export default class SimpleListView extends Component {
 
 const styles = StyleSheet.create({
     listView: {
-        marginTop: px2dp(0)
+        marginTop: px2dp(0),
+        backgroundColor: '#445342'
     },
     header: {
         backgroundColor: '#fff',
