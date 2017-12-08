@@ -2,6 +2,9 @@
 
 一个react native开发的Android app
 
+#### <font color="#b348f3">效果图：</font>
+
+![](https://github.com/hanxiaofeng/ReactNAndroidOne/blob/master/gif/show.gif)
 
 #### <font color="#b348f3">调试方式：</font>
 
